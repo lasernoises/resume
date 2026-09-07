@@ -153,7 +153,7 @@ fn technology_line<'a>(
                     color: state.text_color(),
                     ..Text::new(content, regular, 11.)
                 },
-                Flex::Expand(3),
+                Flex::Expand(5),
             );
         }),
     )
