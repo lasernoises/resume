@@ -18,6 +18,7 @@ use laser_pdf::{
         break_whole::BreakWhole,
         center_in_preferred_height::CenterInPreferredHeight,
         column::Column,
+        expand_to_preferred_height::ExpandToPreferredHeight,
         h_align::{HAlign, HorizontalAlignment},
         line::Line,
         link::Link,
@@ -285,28 +286,61 @@ fn resume(
 
                             content.add(&CenterInPreferredHeight(HAlign(
                                 HorizontalAlignment::Right,
-                                Link {
-                                    target: LinkTarget::Uri(
-                                        &State {
-                                            open: !state.open,
-                                            ..*state
-                                        }
-                                        .to_link(config),
-                                    ),
-                                    element: StyledBox {
-                                        padding_left: 2.,
-                                        padding_right: 2.,
-                                        padding_top: 2.,
-                                        padding_bottom: 2.,
-                                        border_radius: 1.,
-                                        fill: Some(0x21_4e_7a_ff),
-                                        ..StyledBox::new(Text {
-                                            color: 0xff_ff_ff_ff,
-                                            align: TextAlign::Center,
-                                            ..Text::new("⚙", emoji, 16.)
-                                        })
-                                    },
-                                },
+                                Row::new(|content| {
+                                    content.add(
+                                        &Link {
+                                            target: LinkTarget::Uri(
+                                                "https://github.com/lasernoises/resume",
+                                            ),
+                                            element: StyledBox {
+                                                padding_left: 2.,
+                                                padding_right: 2.,
+                                                padding_top: 2.,
+                                                padding_bottom: 2.,
+                                                border_radius: 1.,
+                                                fill: Some(0x21_4e_7a_ff),
+                                                ..StyledBox::new(ExpandToPreferredHeight(
+                                                    Text {
+                                                        color: 0xff_ff_ff_ff,
+                                                        align: TextAlign::Center,
+                                                        extra_character_spacing: -0.5,
+                                                        ..Text::new("</>", regular, 12.)
+                                                    }
+                                                    .with_padding_top(0.3),
+                                                ))
+                                            },
+                                        },
+                                        Flex::SelfSized,
+                                    );
+
+                                    content.add(
+                                        &Link {
+                                            target: LinkTarget::Uri(
+                                                &State {
+                                                    open: !state.open,
+                                                    ..*state
+                                                }
+                                                .to_link(config),
+                                            ),
+                                            element: StyledBox {
+                                                padding_left: 2.,
+                                                padding_right: 2.,
+                                                padding_top: 2.,
+                                                padding_bottom: 2.,
+                                                border_radius: 1.,
+                                                fill: Some(0x21_4e_7a_ff),
+                                                ..StyledBox::new(Text {
+                                                    color: 0xff_ff_ff_ff,
+                                                    align: TextAlign::Center,
+                                                    ..Text::new("⚙", emoji, 16.)
+                                                })
+                                            },
+                                        },
+                                        Flex::SelfSized,
+                                    );
+                                })
+                                .with_gap(2.)
+                                .expand(),
                             )));
                         },
                     }
@@ -477,64 +511,67 @@ fn resume(
                     )?;
                 }
 
-                content = content.add(&RichText {
-                    align: TextAlign::Center,
-                    spans: std::iter::once(Span {
-                        color: state.link_color(),
-                        underline: true,
-                        link: Some(LinkTarget::Uri(config.email_address_mailto)),
-                        ..Span::new(config.email_address, regular, 10.5)
-                    })
-                    .chain(
-                        secret_pass
-                            .then(|| {
-                                [
-                                    Span {
-                                        color: state.text_color(),
-                                        ..Span::new(" • ", regular, 10.5)
-                                    },
-                                    Span {
-                                        color: state.text_color(),
-                                        ..Span::new(config.phone_number, regular, 10.5)
-                                    },
-                                ]
-                            })
-                            .into_iter()
-                            .flatten(),
-                    )
-                    .chain([
-                        Span {
-                            color: state.text_color(),
-                            ..Span::new(" • ", regular, 10.5)
-                        },
-                        Span {
-                            color: state.text_color(),
-                            ..Span::new(localization.location, regular, 10.5)
-                        },
-                        Span {
-                            color: state.text_color(),
-                            ..Span::new(" • ", regular, 10.5)
-                        },
-                        Span {
+                content = content.add(
+                    &RichText {
+                        align: TextAlign::Center,
+                        spans: std::iter::once(Span {
                             color: state.link_color(),
                             underline: true,
-                            link: Some(LinkTarget::Uri(
-                                "https://www.linkedin.com/in/florian-plattner-ba40bb175/",
-                            )),
-                            ..Span::new("LinkedIn", regular, 10.5)
-                        },
-                        Span {
-                            color: state.text_color(),
-                            ..Span::new(" • ", regular, 10.5)
-                        },
-                        Span {
-                            color: state.link_color(),
-                            underline: true,
-                            link: Some(LinkTarget::Uri("https://github.com/lasernoises")),
-                            ..Span::new("GitHub", regular, 10.5)
-                        },
-                    ]),
-                })?;
+                            link: Some(LinkTarget::Uri(config.email_address_mailto)),
+                            ..Span::new(config.email_address, regular, 10.5)
+                        })
+                        .chain(
+                            secret_pass
+                                .then(|| {
+                                    [
+                                        Span {
+                                            color: state.text_color(),
+                                            ..Span::new(" • ", regular, 10.5)
+                                        },
+                                        Span {
+                                            color: state.text_color(),
+                                            ..Span::new(config.phone_number, regular, 10.5)
+                                        },
+                                    ]
+                                })
+                                .into_iter()
+                                .flatten(),
+                        )
+                        .chain([
+                            Span {
+                                color: state.text_color(),
+                                ..Span::new(" • ", regular, 10.5)
+                            },
+                            Span {
+                                color: state.text_color(),
+                                ..Span::new(localization.location, regular, 10.5)
+                            },
+                            Span {
+                                color: state.text_color(),
+                                ..Span::new(" • ", regular, 10.5)
+                            },
+                            Span {
+                                color: state.link_color(),
+                                underline: true,
+                                link: Some(LinkTarget::Uri(
+                                    "https://www.linkedin.com/in/florian-plattner-ba40bb175/",
+                                )),
+                                ..Span::new("LinkedIn", regular, 10.5)
+                            },
+                            Span {
+                                color: state.text_color(),
+                                ..Span::new(" • ", regular, 10.5)
+                            },
+                            Span {
+                                color: state.link_color(),
+                                underline: true,
+                                link: Some(LinkTarget::Uri("https://github.com/lasernoises")),
+                                ..Span::new("GitHub", regular, 10.5)
+                            },
+                        ]),
+                    }
+                    .with_padding_bottom(2.),
+                )?;
 
                 content.add(
                     &Column::new(|mut content| {
@@ -687,7 +724,7 @@ fn resume(
 
                         None
                     })
-                    .with_gap(4.),
+                    .with_gap(5.),
                 )?;
 
                 None
