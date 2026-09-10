@@ -214,7 +214,7 @@ pub static EN: Localization = Localization {
                 "https://github.com/lasernoises/is-this-a-lisp",
             ),
             Span::bold(": "),
-            Span::regular("An attempt at creating a Lisp implementation from first principles."),
+            Span::regular("A Lisp implementation created from first principles."),
         ],
         &[
             Span::link_bold(
