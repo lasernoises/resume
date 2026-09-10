@@ -156,7 +156,7 @@ pub static EN: Localization = Localization {
             content: "Rust, TypeScript, JavaScript, PHP, Dart, C/C++, Python",
         },
         TechnologyLine {
-            title: "Technlogies:",
+            title: "Technologies:",
             content: "Git, Vue.js, Tailwind CSS, Flutter, MariaDB, Linux, Docker, Nix, GDB",
         },
         // TechnologyLine {
